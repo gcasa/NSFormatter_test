@@ -29,7 +29,7 @@
     [self.table reloadData];
 }
 
-// Generate formatted data
+// Generate formatted data with color-coded rows
 - (void)setupData {
     NSNumber *testNumber = @(1234.5678);
     NSDate *testDate = [NSDate date];
@@ -59,14 +59,14 @@
     fullDateFormatter.dateStyle = NSDateFormatterFullStyle;
 
     self.testData = @[
-        @{ @"label": @"Decimal", @"value": [decimalFormatter stringFromNumber:testNumber] },
-        @{ @"label": @"Currency", @"value": [currencyFormatter stringFromNumber:testNumber] },
-        @{ @"label": @"Percent", @"value": [percentFormatter stringFromNumber:testNumber] },
-        @{ @"label": @"Scientific", @"value": [scientificFormatter stringFromNumber:testNumber] },
-        @{ @"label": @"Short Date", @"value": [shortDateFormatter stringFromDate:testDate] },
-        @{ @"label": @"Medium Date", @"value": [mediumDateFormatter stringFromDate:testDate] },
-        @{ @"label": @"Long Date", @"value": [longDateFormatter stringFromDate:testDate] },
-        @{ @"label": @"Full Date", @"value": [fullDateFormatter stringFromDate:testDate] }
+        @{ @"label": @"Decimal", @"value": [decimalFormatter stringFromNumber:testNumber], @"color": [NSColor blueColor] },
+        @{ @"label": @"Currency", @"value": [currencyFormatter stringFromNumber:testNumber], @"color": [NSColor blueColor] },
+        @{ @"label": @"Percent", @"value": [percentFormatter stringFromNumber:testNumber], @"color": [NSColor blueColor] },
+        @{ @"label": @"Scientific", @"value": [scientificFormatter stringFromNumber:testNumber], @"color": [NSColor blueColor] },
+        @{ @"label": @"Short Date", @"value": [shortDateFormatter stringFromDate:testDate], @"color": [NSColor greenColor] },
+        @{ @"label": @"Medium Date", @"value": [mediumDateFormatter stringFromDate:testDate], @"color": [NSColor greenColor] },
+        @{ @"label": @"Long Date", @"value": [longDateFormatter stringFromDate:testDate], @"color": [NSColor greenColor] },
+        @{ @"label": @"Full Date", @"value": [fullDateFormatter stringFromDate:testDate], @"color": [NSColor greenColor] }
     ];
 }
 
@@ -85,6 +85,16 @@
         return rowData[@"value"];
     }
     return nil;
+}
+
+// Apply text color to formatted values dynamically
+- (void)tableView:(NSTableView *)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+    NSDictionary *rowData = self.testData[row];
+
+    if ([cell isKindOfClass:[NSTextFieldCell class]]) {
+        NSTextFieldCell *textCell = (NSTextFieldCell *)cell;
+        textCell.textColor = rowData[@"color"];
+    }
 }
 
 @end
