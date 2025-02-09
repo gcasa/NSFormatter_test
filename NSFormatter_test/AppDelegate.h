@@ -7,8 +7,13 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface AppDelegate : NSObject <NSApplicationDelegate, NSTableViewDataSource, NSTableViewDelegate>
+@interface AppDelegate : NSObject <NSApplicationDelegate, NSTableViewDataSource, NSTableViewDelegate> {
+    IBOutlet NSTableView *_tableView;
+    IBOutlet NSWindow *_window;
+    NSMutableArray *_testData;
+}
 
+- (NSMutableArray *)testData;
+- (void)setTestData:(NSMutableArray *)data;
 
 @end
-

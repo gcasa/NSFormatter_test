@@ -14,7 +14,8 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate">
             <connections>
-                <outlet property="table" destination="iUq-54-B6k" id="ZET-vp-FSZ"/>
+                <outlet property="_tableView" destination="iUq-54-B6k" id="lIR-rm-J6i"/>
+                <outlet property="_window" destination="QvC-M9-y7g" id="beM-hD-gBa"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>

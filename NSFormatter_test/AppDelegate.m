@@ -7,12 +7,6 @@
 
 #import "AppDelegate.h"
 
-@interface AppDelegate ()
-@property (strong) IBOutlet NSTableView *table;
-@property (strong) IBOutlet NSWindow *window;
-@property (strong) NSMutableArray *testData;
-@end
-
 @implementation AppDelegate
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
@@ -26,73 +20,96 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     [self setupData];
-    [self.table reloadData];
+    [_tableView reloadData];
+}
+
+// Getter for testData
+- (NSMutableArray *)testData {
+    return _testData;
+}
+
+// Setter for testData
+- (void)setTestData:(NSMutableArray *)data {
+    if (_testData != data) {
+        // [_testData release];
+        _testData = data; // [data retain];
+    }
+}
+
+// Returns tableView
+- (NSTableView *)tableView {
+    return _tableView;
 }
 
 // Generate formatted data with positive & negative numbers
 - (void)setupData {
-    NSNumber *positiveNumber = @(1234.5678);
-    NSNumber *negativeNumber = @(-1234.5678);
+    NSNumber *positiveNumber = [NSNumber numberWithDouble:1234.5678];
+    NSNumber *negativeNumber = [NSNumber numberWithDouble:-1234.5678];
     NSDate *testDate = [NSDate date];
 
-    NSArray *formatters = @[
-        @{@"name": @"Decimal", @"style": @(NSNumberFormatterDecimalStyle)},
-        @{@"name": @"Currency", @"style": @(NSNumberFormatterCurrencyStyle)},
-        @{@"name": @"Percent", @"style": @(NSNumberFormatterPercentStyle)},
-        @{@"name": @"Scientific", @"style": @(NSNumberFormatterScientificStyle)}
+    NSMutableArray *data = [[NSMutableArray alloc] init];
+
+    NSArray *formatters = [NSArray arrayWithObjects:
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Decimal", @"name", [NSNumber numberWithInt:NSNumberFormatterDecimalStyle], @"style", nil],
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Currency", @"name", [NSNumber numberWithInt:NSNumberFormatterCurrencyStyle], @"style", nil],
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Percent", @"name", [NSNumber numberWithInt:NSNumberFormatterPercentStyle], @"style", nil],
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Scientific", @"name", [NSNumber numberWithInt:NSNumberFormatterScientificStyle], @"style", nil], nil
     ];
 
-    self.testData = [NSMutableArray array];
+    for (NSUInteger i = 0; i < [formatters count]; i++) {
+        NSDictionary *formatterData = [formatters objectAtIndex:i];
+        NSString *label = [formatterData objectForKey:@"name"];
+        NSNumberFormatterStyle style = [[formatterData objectForKey:@"style"] intValue];
 
-    for (NSDictionary *formatterData in formatters) {
-        NSString *label = formatterData[@"name"];
-        NSNumberFormatterStyle style = [formatterData[@"style"] intValue];
+        [data addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:
+            [NSString stringWithFormat:@"%@ (+)", label], @"label",
+            positiveNumber, @"value",
+            [NSNumber numberWithInt:style], @"formatter",
+            [NSColor blueColor], @"color",
+            nil]];
 
-        [self.testData addObject:@{
-            @"label": [NSString stringWithFormat:@"%@ (+)", label],
-            @"value": positiveNumber,
-            @"formatter": @(style),
-            @"color": [NSColor blueColor]
-        }.mutableCopy];
-
-        [self.testData addObject:@{
-            @"label": [NSString stringWithFormat:@"%@ (-)", label],
-            @"value": negativeNumber,
-            @"formatter": @(style),
-            @"color": [NSColor redColor]
-        }.mutableCopy];
+        [data addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:
+            [NSString stringWithFormat:@"%@ (-)", label], @"label",
+            negativeNumber, @"value",
+            [NSNumber numberWithInt:style], @"formatter",
+            [NSColor redColor], @"color",
+            nil]];
     }
 
-    // Add date formatters
-    NSArray *dateStyles = @[
-        @{@"name": @"Short Date", @"style": @(NSDateFormatterShortStyle)},
-        @{@"name": @"Medium Date", @"style": @(NSDateFormatterMediumStyle)},
-        @{@"name": @"Long Date", @"style": @(NSDateFormatterLongStyle)},
-        @{@"name": @"Full Date", @"style": @(NSDateFormatterFullStyle)}
+    NSArray *dateStyles = [NSArray arrayWithObjects:
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Short Date", @"name", [NSNumber numberWithInt:NSDateFormatterShortStyle], @"style", nil],
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Medium Date", @"name", [NSNumber numberWithInt:NSDateFormatterMediumStyle], @"style", nil],
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Long Date", @"name", [NSNumber numberWithInt:NSDateFormatterLongStyle], @"style", nil],
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Full Date", @"name", [NSNumber numberWithInt:NSDateFormatterFullStyle], @"style", nil], nil
     ];
 
-    for (NSDictionary *dateData in dateStyles) {
-        [self.testData addObject:@{
-            @"label": dateData[@"name"],
-            @"value": testDate,
-            @"formatter": dateData[@"style"],
-            @"color": [NSColor greenColor]
-        }.mutableCopy];
+    for (NSUInteger i = 0; i < [dateStyles count]; i++) {
+        NSDictionary *dateData = [dateStyles objectAtIndex:i];
+
+        [data addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:
+            [dateData objectForKey:@"name"], @"label",
+            testDate, @"value",
+            [dateData objectForKey:@"style"], @"formatter",
+            [NSColor greenColor], @"color",
+            nil]];
     }
+
+    [self setTestData:data];
+    //[data release];
 }
 
 // Returns the number of rows in the table
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    return self.testData.count;
+    return [[self testData] count];
 }
 
 // Returns formatted values with color
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-    NSMutableDictionary *rowData = self.testData[row];
+    NSMutableDictionary *rowData = [[self testData] objectAtIndex:row];
 
-    if ([tableColumn.identifier isEqualToString:@"label"]) {
-        return rowData[@"label"];
-    } else if ([tableColumn.identifier isEqualToString:@"value"]) {
+    if ([[tableColumn identifier] isEqualToString:@"label"]) {
+        return [rowData objectForKey:@"label"];
+    } else if ([[tableColumn identifier] isEqualToString:@"value"]) {
         return [self attributedStringForFormattedValue:rowData];
     }
     return nil;
@@ -101,49 +118,34 @@
 // Convert formatted values into NSAttributedString with embedded colors
 - (NSAttributedString *)attributedStringForFormattedValue:(NSDictionary *)rowData {
     NSString *formattedString = [self formattedValueForRow:rowData];
-    NSColor *color = rowData[@"color"];
+    NSColor *color = [rowData objectForKey:@"color"];
 
-    NSDictionary *attributes = @{ NSForegroundColorAttributeName: color };
-    return [[NSAttributedString alloc] initWithString:formattedString attributes:attributes];
-}
-
-// Apply row background color (alternating rows)
-- (void)tableView:(NSTableView *)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-    if ([cell isKindOfClass:[NSTextFieldCell class]]) {
-        NSTextFieldCell *textCell = (NSTextFieldCell *)cell;
-
-        // Alternate row background colors
-        if (row % 2 == 0) {
-            textCell.backgroundColor = [NSColor lightGrayColor]; // [NSColor colorWithWhite:0.95 alpha:1.0]; // Light gray
-        } else {
-            textCell.backgroundColor = [NSColor darkGrayColor]; // [NSColor whiteColor]; // White
-        }
-        textCell.drawsBackground = YES;
-    }
+    NSDictionary *attributes = [NSDictionary dictionaryWithObject:color forKey:NSForegroundColorAttributeName];
+    return [[NSAttributedString alloc] initWithString:formattedString attributes:attributes]; /// autorelease];
 }
 
 // Allow editing and update values dynamically
 - (void)tableView:(NSTableView *)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-    NSMutableDictionary *rowData = self.testData[row];
+    NSMutableDictionary *rowData = [[self testData] objectAtIndex:row];
 
-    if ([tableColumn.identifier isEqualToString:@"value"]) {
-        rowData[@"value"] = [self convertInput:object forRow:rowData];
-        rowData[@"color"] = ([rowData[@"value"] doubleValue] < 0) ? [NSColor redColor] : [NSColor blueColor];
-        [self.table reloadData]; // Refresh to apply formatting
+    if ([[tableColumn identifier] isEqualToString:@"value"]) {
+        [rowData setObject:[self convertInput:object forRow:rowData] forKey:@"value"];
+        [rowData setObject:([[rowData objectForKey:@"value"] doubleValue] < 0 ? [NSColor redColor] : [NSColor blueColor]) forKey:@"color"];
+        [[self tableView] reloadData];
     }
 }
 
 // Format values dynamically
 - (NSString *)formattedValueForRow:(NSDictionary *)rowData {
-    id value = rowData[@"value"];
-    NSNumberFormatter *numFormatter = [[NSNumberFormatter alloc] init];
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    id value = [rowData objectForKey:@"value"];
+    NSNumberFormatter *numFormatter = [[NSNumberFormatter alloc] init]; // autorelease];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init]; // autorelease];
 
     if ([value isKindOfClass:[NSNumber class]]) {
-        numFormatter.numberStyle = [rowData[@"formatter"] intValue];
+        [numFormatter setNumberStyle:[[rowData objectForKey:@"formatter"] intValue]];
         return [numFormatter stringFromNumber:value];
     } else if ([value isKindOfClass:[NSDate class]]) {
-        dateFormatter.dateStyle = [rowData[@"formatter"] intValue];
+        [dateFormatter setDateStyle:[[rowData objectForKey:@"formatter"] intValue]];
         return [dateFormatter stringFromDate:value];
     }
     return @"";
@@ -151,14 +153,14 @@
 
 // Convert user input based on formatter type
 - (id)convertInput:(id)input forRow:(NSDictionary *)rowData {
-    NSNumberFormatter *numFormatter = [[NSNumberFormatter alloc] init];
-    numFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+    NSNumberFormatter *numFormatter = [[NSNumberFormatter alloc] init]; // autorelease];
+    [numFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 
-    if ([rowData[@"formatter"] intValue] <= NSNumberFormatterScientificStyle) {
+    if ([[rowData objectForKey:@"formatter"] intValue] <= NSNumberFormatterScientificStyle) {
         return [numFormatter numberFromString:input];
     } else {
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.dateStyle = [rowData[@"formatter"] intValue];
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init]; // autorelease];
+        [dateFormatter setDateStyle:[[rowData objectForKey:@"formatter"] intValue]];
         return [dateFormatter dateFromString:input] ?: input;
     }
 }
