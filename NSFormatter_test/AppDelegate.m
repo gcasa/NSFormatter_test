@@ -50,10 +50,14 @@
     NSMutableArray *data = [[NSMutableArray alloc] init];
 
     NSArray *formatters = [NSArray arrayWithObjects:
-        [NSDictionary dictionaryWithObjectsAndKeys:@"Decimal", @"name", [NSNumber numberWithInt:NSNumberFormatterDecimalStyle], @"style", nil],
-        [NSDictionary dictionaryWithObjectsAndKeys:@"Currency", @"name", [NSNumber numberWithInt:NSNumberFormatterCurrencyStyle], @"style", nil],
-        [NSDictionary dictionaryWithObjectsAndKeys:@"Percent", @"name", [NSNumber numberWithInt:NSNumberFormatterPercentStyle], @"style", nil],
-        [NSDictionary dictionaryWithObjectsAndKeys:@"Scientific", @"name", [NSNumber numberWithInt:NSNumberFormatterScientificStyle], @"style", nil], nil
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Decimal", @"name",
+			   [NSNumber numberWithInt:NSNumberFormatterDecimalStyle], @"style", nil],
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Currency", @"name",
+			   [NSNumber numberWithInt:NSNumberFormatterCurrencyStyle], @"style", nil],
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Percent", @"name",
+			   [NSNumber numberWithInt:NSNumberFormatterPercentStyle], @"style", nil],
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Scientific", @"name",
+			   [NSNumber numberWithInt:NSNumberFormatterScientificStyle], @"style", nil], nil
     ];
 
     for (NSUInteger i = 0; i < [formatters count]; i++) {
@@ -77,10 +81,14 @@
     }
 
     NSArray *dateStyles = [NSArray arrayWithObjects:
-        [NSDictionary dictionaryWithObjectsAndKeys:@"Short Date", @"name", [NSNumber numberWithInt:NSDateFormatterShortStyle], @"style", nil],
-        [NSDictionary dictionaryWithObjectsAndKeys:@"Medium Date", @"name", [NSNumber numberWithInt:NSDateFormatterMediumStyle], @"style", nil],
-        [NSDictionary dictionaryWithObjectsAndKeys:@"Long Date", @"name", [NSNumber numberWithInt:NSDateFormatterLongStyle], @"style", nil],
-        [NSDictionary dictionaryWithObjectsAndKeys:@"Full Date", @"name", [NSNumber numberWithInt:NSDateFormatterFullStyle], @"style", nil], nil
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Short Date", @"name",
+			   [NSNumber numberWithInt:NSDateFormatterShortStyle], @"style", nil],
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Medium Date", @"name",
+			   [NSNumber numberWithInt:NSDateFormatterMediumStyle], @"style", nil],
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Long Date", @"name",
+			   [NSNumber numberWithInt:NSDateFormatterLongStyle], @"style", nil],
+        [NSDictionary dictionaryWithObjectsAndKeys:@"Full Date", @"name",
+			   [NSNumber numberWithInt:NSDateFormatterFullStyle], @"style", nil], nil
     ];
 
     for (NSUInteger i = 0; i < [dateStyles count]; i++) {
@@ -104,7 +112,9 @@
 }
 
 // Returns formatted values with color
-- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+- (id)tableView:(NSTableView *)tableView
+objectValueForTableColumn:(NSTableColumn *)tableColumn
+	    row:(NSInteger)row {
     NSMutableDictionary *rowData = [[self testData] objectAtIndex:row];
 
     if ([[tableColumn identifier] isEqualToString:@"label"]) {
@@ -125,12 +135,16 @@
 }
 
 // Allow editing and update values dynamically
-- (void)tableView:(NSTableView *)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+- (void)tableView:(NSTableView *)tableView
+   setObjectValue:(id)object
+   forTableColumn:(NSTableColumn *)tableColumn
+	      row:(NSInteger)row {
     NSMutableDictionary *rowData = [[self testData] objectAtIndex:row];
 
     if ([[tableColumn identifier] isEqualToString:@"value"]) {
         [rowData setObject:[self convertInput:object forRow:rowData] forKey:@"value"];
-        [rowData setObject:([[rowData objectForKey:@"value"] doubleValue] < 0 ? [NSColor redColor] : [NSColor blueColor]) forKey:@"color"];
+        [rowData setObject:([[rowData objectForKey:@"value"] doubleValue] < 0 ?
+			    [NSColor redColor] : [NSColor blueColor]) forKey:@"color"];
         [[self tableView] reloadData];
     }
 }
